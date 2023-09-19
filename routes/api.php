@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\SecondController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -41,9 +44,34 @@ Route::get('/cuaca', function () {
 });
 
 Route::get('/cuaca/{id}', function ($id) {
-    return response()->json(
-        ["id" => $id]
-    );
+    $res = [];
+    $demoData = [
+        [
+            "id" => "k1",
+            "lokasi" => "Gombak",
+            'suhu' => 25,
+            'keadaan' => "mendung",
+        ],
+        [
+            "id" => "k2",
+            "lokasi" => "Shah Alam",
+            'suhu' => 32,
+            'keadaan' => "panas",
+        ],
+    ];
+
+    foreach ($demoData as $key => $value) {
+        if ($id == $value['id']) {
+            $res = $value;
+            break;
+        } 
+        // else if ($id != $value['id']) {
+        //     return response()->json(['message' => 'Data not found'], 404);
+        // }
+    }
+    
+
+    return response() -> json($res);
 });
 
 Route::post('/cuaca', function (Request $request) {
@@ -100,9 +128,11 @@ Route::group(['prefix' => '/weather'], function () {
                 if ($id == $value['id']) {
                     $res = $value;
                     break;
-                } else if ($id != $value['id']) {
-                    return response()->json(['message' => 'Data not found'], 404);
-                }
+                } 
+                // if ($id != $value['id']) {
+                //     $res = ['message' => 'Id not valid.'];
+                //     break;
+                // }
             }
             return response()->json($res);
         } catch (\Throwable $th) {
@@ -110,4 +140,13 @@ Route::group(['prefix' => '/weather'], function () {
             return response()->json(['message' => $th->getMessage()], 500);
         }
     });
+});
+
+Route::group(['prefix' => '/movies'], function () {
+    Route::get('/', [TicketController::class, 'getAll']);
+    Route::get('/{id}', [TicketController::class, 'getById']);
+});
+
+Route::group(['prefix' => '/games'], function () {
+    Route::get('/',[SecondController::class,'getAll']);
 });
